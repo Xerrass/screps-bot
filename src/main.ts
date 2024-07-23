@@ -14,16 +14,21 @@ declare global {
   interface Memory {
     uuid: number;
     log: any;
+    scoutRooms: Array<ScoutRoom>;
   }
-
+  interface ScoutRoom {
+    name: string
+    visited: boolean
+    enemy: boolean
+  }
   interface CreepMemory {
     role: string;
     room?: string;
     working?: boolean;
     full?: boolean;
     cont?: boolean;
-    sid?: number
-    ttl?: boolean
+    sid?: number;
+    ttl?: boolean;
   }
 
   interface SpawnMemory {
@@ -33,17 +38,17 @@ declare global {
 
   interface RoomMemory {
     roadSetup: boolean;
-    sources: Array<RoomSource>
-    harvestersNeeded: number
+    sources: Array<RoomSource>;
+    harvestersNeeded: number;
   }
 
   interface SourceHarvester {
-    harvname: string
+    harvname: string;
   }
-  interface RoomSource{
-    id: number,
-    plainTiles: number,
-    sourceHarv: Array<SourceHarvester>
+  interface RoomSource {
+    id: number;
+    plainTiles: number;
+    sourceHarv: Array<SourceHarvester>;
   }
 
   interface Role {
@@ -80,9 +85,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
   if (Game.time % 10 == 0) {
     for (const name in Memory.creeps) {
       if (!(name in Game.creeps)) {
-        for (let room in Game.rooms){
-          for (let source in Game.rooms[room].memory.sources){
-            for (let harv in Game.rooms[room].memory.sources[source].sourceHarv){
+        for (let room in Game.rooms) {
+          for (let source in Game.rooms[room].memory.sources) {
+            for (let harv in Game.rooms[room].memory.sources[source].sourceHarv) {
               if (Game.rooms[room].memory.sources[source].sourceHarv[harv].harvname == name)
                 Game.rooms[room].memory.sources[source].sourceHarv[harv].harvname = "";
             }

@@ -24,7 +24,7 @@ export function runSpawner(spawner: StructureSpawn) {
     spawnCreepByRole(spawner, Transport);
   } else if (upgraders.length < 2) {
     spawnCreepByRole(spawner, Upgrader);
-  } else if (transportUpgraders.length < 1) {
+  } else if (transportUpgraders.length < 2) {
     spawnCreepByRole(spawner, TransportUpgrader);
   } else if (workers.length < 2) {
     spawnCreepByRole(spawner, Worker);
@@ -41,6 +41,13 @@ export function runSpawner(spawner: StructureSpawn) {
   if (sacri.length > 0) {
     spawner.recycleCreep(sacri[0]);
   }
+
+  spawner.room.visual.text(
+    "⚡: " + spawner.room.energyAvailable + "/" + spawner.room.energyCapacityAvailable,
+    spawner.pos.x - 3,
+    spawner.pos.y - 2,
+    { align: "left", opacity: 0.8 }
+  );
 }
 
 function spawnCreepByRole(spawn: StructureSpawn, role: Role) {
