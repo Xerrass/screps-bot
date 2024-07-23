@@ -14,6 +14,7 @@ export var Upgrader: Role = {
       creep.moveTo(creep.room.controller!);
     } else {
       creep.upgradeController(creep.room.controller!);
+      //creep.signController(creep.room.controller!, "Newbie here! Lets see when my codebase is a thing to be reconed with....")
     }
   }
 };

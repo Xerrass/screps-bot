@@ -9,11 +9,9 @@ export var Transport: Role = {
     }
   },
   run: function (creep: Creep) {
-    let engSource = creep.room.find(FIND_SOURCES_ACTIVE)[0];
-    /* let storage = creep.room.find(FIND_MY_STRUCTURES, {
-   filter: s => s.structureType === STRUCTURE_STORAGE && s.pos.findInRange(FIND_SOURCES, 2).length === 0
- });*/
-    //console.log('source is '+engSource);
+    let storage = creep.room.find(FIND_MY_STRUCTURES, {
+      filter: s => s.structureType === STRUCTURE_STORAGE && s.pos.findInRange(FIND_SOURCES, 2).length === 0
+    });
     let core: StructureSpawn = creep.pos.findClosestByRange(FIND_STRUCTURES, {
       filter: s => s.structureType === STRUCTURE_SPAWN
     })!;
@@ -29,8 +27,7 @@ export var Transport: Role = {
     creep.say("🚛");
 
     if (creep.store.getFreeCapacity(RESOURCE_ENERGY) >= 0) {
-      let res = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: s => s.amount >= 100 })!;
-
+      let res = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: s => s.amount >= (creep.store.getCapacity()/ 1.1)})!;
       if (creep.pickup(res) == ERR_NOT_IN_RANGE) {
         creep.moveTo(res);
       }
@@ -53,10 +50,26 @@ export var Transport: Role = {
           }
         });
       }
+      let towers = creep.room.find(FIND_MY_STRUCTURES, {
+        filter: s => s.structureType == STRUCTURE_TOWER && s.isActive() && s.store.getFreeCapacity(RESOURCE_ENERGY) > 50
+      }) as StructureTower[];
+
+      if (towers.length > 0) {
+        if (creep.transfer(towers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+          creep.moveTo(towers[0]);
+          return;
+        }
+      }
 
       if (workers.length > 0 && workers[0].store.getUsedCapacity() <= 10 && extensions.length == 0) {
         if (creep.transfer(workers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
           creep.moveTo(workers[0]);
+          return;
+        }
+      }
+      if (storage.length > 0){
+        if (creep.transfer(storage[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+          creep.moveTo(storage[0]);
           return;
         }
       }

@@ -20,7 +20,7 @@ export var TransportUpgrader: Role = {
 
     var upgraders = _.filter(
       Game.creeps,
-      creep => creep.memory.role == "upgrader" && creep.store.getUsedCapacity(RESOURCE_ENERGY) <= 20
+      creep => creep.memory.role == "upgrader" && creep.store.getUsedCapacity(RESOURCE_ENERGY) <= 30
     );
 
     creep.say("🚛");

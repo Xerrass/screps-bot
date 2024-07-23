@@ -9,9 +9,7 @@ export function runSpawner(spawner: StructureSpawn) {
   if (!spawner.memory.extensionsStage) spawner.memory.extensionsStage = 0;
   if (!spawner.memory.stage) spawner.memory.stage = 0;
 
-
-  if (spawner.spawning) return
-
+  if (spawner.spawning) return;
 
   var harvesters = _.filter(Game.creeps, creep => creep.memory.role == "harvester");
   var transports = _.filter(Game.creeps, creep => creep.memory.role == "transport");
@@ -46,11 +44,13 @@ export function runSpawner(spawner: StructureSpawn) {
 }
 
 function spawnCreepByRole(spawn: StructureSpawn, role: Role) {
+  console.log("Trying to spawn: " + role.stats.name);
   if (spawn.room.energyAvailable < spawn.room.energyCapacityAvailable) return;
 
   console.log(
     spawn.spawnCreep(generateBody(role, spawn.room), role.stats.name + Game.time, {
-      memory: role.stats.memory, directions: [RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT]
+      memory: role.stats.memory,
+      directions: [RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT]
     })
   );
 }
@@ -60,15 +60,6 @@ function roomSetup(room: Room, spawner: StructureSpawn) {
     for (let road of MainBase.structures.Roads) {
       room.createConstructionSite(spawner.pos.x + road.x, spawner.pos.y + road.y, STRUCTURE_ROAD);
     }
-
-    for (let tower in MainBase.structures.Towers){
-      room.createConstructionSite(
-        MainBase.structures.Towers[tower].x + spawner.pos.x,
-        MainBase.structures.Towers[tower].y + spawner.pos.y,
-        STRUCTURE_TOWER
-      );
-    }
-
 
     let engSource = spawner.room.find(FIND_SOURCES);
     engSource.forEach(element => {
@@ -95,6 +86,24 @@ function roomSetup(room: Room, spawner: StructureSpawn) {
     room.memory.roadSetup = true;
   }
 
+  if (room.controller!.level >= 3 && Game.time % 10 == 0) {
+    Object.values(MainBase.structures.Rampparts).forEach(rampart => {
+      room.createConstructionSite(spawner.pos.x + rampart.x, spawner.pos.y + rampart.y, STRUCTURE_RAMPART);
+    });
+  }
+  if (room.controller!.level >= 3 && Game.time % 10 == 2) {
+    Object.values(MainBase.structures.Towers).forEach(tower => {
+      room.createConstructionSite(tower.x + spawner.pos.x, tower.y + spawner.pos.y, STRUCTURE_TOWER);
+    });
+  }
+
+  if (room.controller!.level >= 4 && Game.time % 10 == 3) {
+    room.createConstructionSite(
+      spawner.pos.x + MainBase.structures.storagePos.x,
+      spawner.pos.y + MainBase.structures.storagePos.y,
+      STRUCTURE_STORAGE
+    );
+  }
   for (let extension of MainBase.structures.Extensions) {
     room.createConstructionSite(spawner.pos.x + extension.x, spawner.pos.y + extension.y, STRUCTURE_EXTENSION);
   }
@@ -110,15 +119,15 @@ function generateBody(creepRole: Role, room: Room) {
     avEng -= 50;
   } else {
     let engDrained = 0;
-    for (let i = 0; i < avEng / 2; i += 50) {
+    for (let i = 0; i < avEng / 3; i += 50) {
       body.push("move");
       engDrained += 50;
     }
     avEng = avEng - engDrained;
   }
-  if (creepRole.stats.oneCarry){
-    body.push("carry")
-    avEng -= 50
+  if (creepRole.stats.oneCarry) {
+    body.push("carry");
+    avEng -= 50;
   }
 
   console.log(avEng);

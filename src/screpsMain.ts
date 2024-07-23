@@ -35,7 +35,7 @@ export default function screepsMain() {
   Object.values(Game.creeps).forEach(creep => {
     if (creep.spawning) return;
 
-    if (creep.ticksToLive! <= 100) creep.memory.ttl = true;
+    if (creep.ticksToLive! <= 200) creep.memory.ttl = true;
 
     if (creep.ticksToLive! >= 1200) creep.memory.ttl = false;
 
