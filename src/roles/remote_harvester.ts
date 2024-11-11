@@ -1,10 +1,10 @@
 export var Template: Role = {
   stats: {
-    name: "Harvester",
+    name: "RH_",
     body: [WORK],
     oneMove: true,
     memory: {
-      role: "harvester",
+      role: "remote_harvester",
       full: false
     }
   },

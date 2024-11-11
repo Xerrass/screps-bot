@@ -5,9 +5,9 @@ import { Towers } from "towerRoles/mainTower";
 import scoreboard from "utils/scoreboard";
 
 export default function screepsMain() {
-  let CPU = true;
+  let CPU = false;
 
-  if (Game.time % 10 == 1) {
+  if (Game.time % 25 == 0) {
     for (let room in Game.rooms) {
       if (typeof Game.rooms[room].memory.sources === "undefined") {
         RoomSetup.setupSources(Game.rooms[room]);
@@ -17,7 +17,13 @@ export default function screepsMain() {
   }
 
   Object.values(Game.rooms).forEach(room => {
-    let beforeRoom = Game.cpu.getUsed()
+    let beforeRoom = Game.cpu.getUsed();
+    if (Game.time % 1 == 0) {
+      room;
+    }
+    if (room.find(FIND_HOSTILE_CREEPS).length > 2 || room.find(FIND_HOSTILE_POWER_CREEPS).length > 2)
+      room.controller?.activateSafeMode();
+
     let towers = room.find(FIND_MY_STRUCTURES, {
       filter: s => s.structureType == STRUCTURE_TOWER && s.isActive()
     }) as StructureTower[];
@@ -30,12 +36,11 @@ export default function screepsMain() {
       runSpawner(spawn);
     });
 
-      let beforeCreep = Game.cpu.getUsed();
     let creeps = room.find(FIND_MY_CREEPS);
     Object.values(creeps).forEach(creep => {
       creepsMain(creep);
     });
-      if (CPU) console.log("Room CPU: " + (Game.cpu.getUsed() - beforeRoom));
+    if (CPU) console.log("Room CPU: " + (Game.cpu.getUsed() - beforeRoom));
   });
 
   let beforeScoreboard = Game.cpu.getUsed();

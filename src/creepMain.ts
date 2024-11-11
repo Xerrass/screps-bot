@@ -1,4 +1,5 @@
 import { Harvester } from "roles/harvester";
+import { Spreader } from "roles/spreader";
 import { Transport } from "roles/transport";
 import { TransportUpgrader } from "roles/transportUpgrader";
 import { Upgrader } from "roles/upgrader";
@@ -10,7 +11,7 @@ export function creepsMain(creep: Creep) {
 
   if (creep.ticksToLive! <= 200) creep.memory.ttl = true;
 
-  if (creep.ticksToLive! >= 1400) creep.memory.ttl = false;
+  if (creep.ticksToLive! >= 1300) creep.memory.ttl = false;
 
   if (creep.memory.ttl) {
     creep.moveTo(home);
@@ -38,6 +39,9 @@ export function creepsMain(creep: Creep) {
       break;
     case TransportUpgrader.stats.memory.role:
       TransportUpgrader.run(creep);
+      break;
+    case Spreader.stats.memory.role:
+      Spreader.run(creep);
       break;
   }
 }

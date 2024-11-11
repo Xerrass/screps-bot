@@ -1,6 +1,6 @@
 export var TransportUpgrader: Role = {
   stats: {
-    name: "TransportUpgrader",
+    name: "TU_",
     body: [CARRY],
     oneMove: false,
     memory: {
@@ -26,10 +26,18 @@ export var TransportUpgrader: Role = {
     creep.say("🚛");
 
     if (creep.store.getFreeCapacity(RESOURCE_ENERGY) >= 0) {
-      let res = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: s => s.amount >= 20 })!;
-
-      if (creep.pickup(res) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(res);
+      if (creep.room.storage) {
+        if (
+          creep.withdraw(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE &&
+          creep.room.storage.store.energy >= 4000
+        ) {
+          creep.moveTo(creep.room.storage);
+        }
+      } else {
+        let res = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: s => s.amount >= 20 })!;
+        if (creep.pickup(res) == ERR_NOT_IN_RANGE) {
+          creep.moveTo(res);
+        }
       }
     }
     if (creep.store.getUsedCapacity() > 0) {

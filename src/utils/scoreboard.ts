@@ -1,5 +1,5 @@
 export default function scoreboard() {
-  if (Game.time % 1 == 0) {
+  if (Game.time % 5 == 0) {
     var gclp = Game.gcl.progress;
     var gclpt = Game.gcl.progressTotal;
     var gclpercent = (gclp / gclpt) * 100;

@@ -20,6 +20,7 @@ declare global {
     name: string
     visited: boolean
     enemy: boolean
+    scoutCreep: string
   }
   interface CreepMemory {
     role: string;
@@ -59,7 +60,7 @@ declare global {
       oneCarry?: boolean;
       memory: {
         role: string;
-        full: boolean;
+        full?: boolean;
       };
     };
     run: Function;
@@ -85,6 +86,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   if (Game.time % 10 == 0) {
     for (const name in Memory.creeps) {
       if (!(name in Game.creeps)) {
+
         for (let room in Game.rooms) {
           for (let source in Game.rooms[room].memory.sources) {
             for (let harv in Game.rooms[room].memory.sources[source].sourceHarv) {
@@ -93,6 +95,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
             }
           }
         }
+
+        for (let scoutroom in Memory.scoutRooms){
+          if (Memory.scoutRooms[scoutroom].scoutCreep == name)
+            Memory.scoutRooms[scoutroom].scoutCreep = "";
+        }
+
         delete Memory.creeps[name];
       }
     }

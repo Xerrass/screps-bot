@@ -1,4 +1,5 @@
 import { Harvester } from "roles/harvester";
+import { Spreader } from "roles/spreader";
 import { Transport } from "roles/transport";
 import { TransportUpgrader } from "roles/transportUpgrader";
 import { Upgrader } from "roles/upgrader";
@@ -11,23 +12,27 @@ export function runSpawner(spawner: StructureSpawn) {
 
   if (spawner.spawning) return;
 
-  var harvesters = _.filter(Game.creeps, creep => creep.memory.role == "harvester");
-  var transports = _.filter(Game.creeps, creep => creep.memory.role == "transport");
-  var upgraders = _.filter(Game.creeps, creep => creep.memory.role == "upgrader");
-  var workers = _.filter(Game.creeps, creep => creep.memory.role == "worker");
-  var transportUpgraders = _.filter(Game.creeps, creep => creep.memory.role == "transportUpgrader");
+  var harvesters = _.filter(Game.creeps, creep => creep.memory.role == Harvester.stats.memory.role);
+  var transports = _.filter(Game.creeps, creep => creep.memory.role == Transport.stats.memory.role);
+  var upgraders = _.filter(Game.creeps, creep => creep.memory.role == Upgrader.stats.memory.role);
+  var workers = _.filter(Game.creeps, creep => creep.memory.role == Worker.stats.memory.role);
+  var transportUpgraders = _.filter(Game.creeps, creep => creep.memory.role == TransportUpgrader.stats.memory.role);
+  var spreader = _.filter(Game.creeps, creep => creep.memory.role == Spreader.stats.memory.role);
+
   roomSetup(Game.spawns.HQ.room, Game.spawns.HQ);
 
   if (harvesters.length < spawner.room.memory.harvestersNeeded) {
     spawnCreepByRole(spawner, Harvester);
   } else if (transports.length < 2) {
     spawnCreepByRole(spawner, Transport);
-  } else if (upgraders.length < 2) {
+  } else if (upgraders.length < 1) {
     spawnCreepByRole(spawner, Upgrader);
-  } else if (transportUpgraders.length < 2) {
+  } else if (transportUpgraders.length < 1) {
     spawnCreepByRole(spawner, TransportUpgrader);
-  } else if (workers.length < 2) {
+  } else if (workers.length < 1) {
     spawnCreepByRole(spawner, Worker);
+  } else if (spreader.length < 1 && spawner.room.storage) {
+    spawnCreepByRole(spawner, Spreader);
   }
   var ttls = _.filter(Game.creeps, creep => creep.saying == "Ttl");
   var sacri = _.filter(Game.creeps, creeps => creeps.saying == "🪦");
@@ -44,8 +49,8 @@ export function runSpawner(spawner: StructureSpawn) {
 
   spawner.room.visual.text(
     "⚡: " + spawner.room.energyAvailable + "/" + spawner.room.energyCapacityAvailable,
-    spawner.pos.x - 3,
-    spawner.pos.y - 2,
+    spawner.pos.x - 6,
+    spawner.pos.y - 5,
     { align: "left", opacity: 0.8 }
   );
 }
@@ -55,7 +60,7 @@ function spawnCreepByRole(spawn: StructureSpawn, role: Role) {
   if (spawn.room.energyAvailable < spawn.room.energyCapacityAvailable) return;
 
   console.log(
-    spawn.spawnCreep(generateBody(role, spawn.room), role.stats.name + Game.time, {
+    spawn.spawnCreep(generateBody(role, spawn.room), role.stats.name + spawn.room.name + Game.time, {
       memory: role.stats.memory,
       directions: [RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT]
     })
@@ -93,14 +98,14 @@ function roomSetup(room: Room, spawner: StructureSpawn) {
     room.memory.roadSetup = true;
   }
 
-  if (room.controller!.level >= 3 && Game.time % 10 == 0) {
-    Object.values(MainBase.structures.Rampparts).forEach(rampart => {
-      room.createConstructionSite(spawner.pos.x + rampart.x, spawner.pos.y + rampart.y, STRUCTURE_RAMPART);
-    });
-  }
   if (room.controller!.level >= 3 && Game.time % 10 == 2) {
     Object.values(MainBase.structures.Towers).forEach(tower => {
       room.createConstructionSite(tower.x + spawner.pos.x, tower.y + spawner.pos.y, STRUCTURE_TOWER);
+    });
+  }
+  if (room.controller!.level >= 3 && Game.time % 10 == 0) {
+    Object.values(MainBase.structures.Rampparts).forEach(rampart => {
+      room.createConstructionSite(spawner.pos.x + rampart.x, spawner.pos.y + rampart.y, STRUCTURE_RAMPART);
     });
   }
 
@@ -111,9 +116,10 @@ function roomSetup(room: Room, spawner: StructureSpawn) {
       STRUCTURE_STORAGE
     );
   }
-  for (let extension of MainBase.structures.Extensions) {
+
+  Object.values(MainBase.structures.Extensions).forEach(extension => {
     room.createConstructionSite(spawner.pos.x + extension.x, spawner.pos.y + extension.y, STRUCTURE_EXTENSION);
-  }
+  });
 }
 
 function generateBody(creepRole: Role, room: Room) {

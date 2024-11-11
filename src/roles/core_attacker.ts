@@ -1,11 +1,10 @@
 export var Template: Role = {
   stats: {
-    name: "SC_",
-    body: [],
+    name: "CA_",
+    body: [ATTACK],
     oneMove: true,
     memory: {
-      role: "scout",
-      full: false
+      role: "core_atacker",
     }
   },
   run: function (creep: Creep) {

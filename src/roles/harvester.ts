@@ -1,6 +1,6 @@
 export var Harvester: Role = {
   stats: {
-    name: "Harvester",
+    name: "H_",
     body: [WORK],
     oneMove: true,
     memory: {

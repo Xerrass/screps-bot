@@ -1,6 +1,6 @@
 export var Upgrader: Role = {
   stats: {
-    name: "Upgrader",
+    name: "UP_",
     body: [WORK],
     oneMove: true,
     oneCarry: true,
